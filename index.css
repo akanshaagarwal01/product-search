@@ -1,9 +1,18 @@
+body {
+    margin:30px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
 #container {
     display:flex;
 }
 
 .filters {
     width:20%;
+}
+
+#Color {
+    width:150px;
 }
 
 .colorCheckbox {
@@ -18,24 +27,48 @@
     display: inline-block;
 }
 
-.products {
+#products {
     width:80%;
     display:flex;
     flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+#productGrid {
+    width:100%;
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+#resultCount {
+    width:100%;
+    height:50px;
+}
+
+#sortBy {
+    width:100%;
+    height:50px;
 }
 
 .productContainer {
-
+    height:330px;
+    width:250px;
+    padding:30px;
 }
 
 .productImgContainer {
-
+    height:250px;
+    width:250px;
 }
 
 .productImg {
-
+    height:250px;
+    width:250px;
 }
 
 .productDescription {
-
+    height:80px;
+    width:250px;
+    /* font-size: 12px; */
 }

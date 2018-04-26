@@ -9,6 +9,15 @@
             brandFilter: document.getElementById("brandName"),
             colorFilter: document.getElementById("Color")
         };
+        this._filters = {
+            price: {
+                minPrice: '',
+                maxPrice: '',
+            },
+            brands: [],
+            colors: []
+        };
+        this._products = new Products();
     }
     Filters.prototype.getAllFilters = function () {
         fetch(this._api)
@@ -26,57 +35,83 @@
 
     Filters.prototype.populatePriceFilter = function () {
         let priceObj = this._filterArr.find(item => item.type === "PRICE");
+        this._filters.price.minPrice = priceObj.values.find(item => item.key === "Min");
+        this._filters.price.maxPrice = priceObj.values.find(item => item.key === "Max");
         if (priceObj) {
             let min, max;
             for (let value of priceObj.values) {
-                min = document.createElement('option');
-                min.value = value.key;
-                min.text = value.displayValue;
-                this._cachedDOMElements.fromPriceFilter.append(min);
-                max = document.createElement('option');
-                max.value = value.key;
-                max.text = value.displayValue;
-                this._cachedDOMElements.toPriceFilter.append(max);
+                if (value.key !== "Max") {
+                    min = document.createElement('option');
+                    min.value = value.key;
+                    min.text = value.displayValue;
+                    this._cachedDOMElements.fromPriceFilter.append(min);
+                }
+                if (value.key !== "Min") {
+                    max = document.createElement('option');
+                    max.value = value.key;
+                    max.text = value.displayValue;
+                    this._cachedDOMElements.toPriceFilter.append(max);
+                }
             }
             this._cachedDOMElements.fromPriceFilter.selectedIndex = 0;
-            this._cachedDOMElements.toPriceFilter.selectedIndex = priceObj.values.length - 1;
+            this._cachedDOMElements.toPriceFilter.selectedIndex = priceObj.values.length - 2;
             this._cachedDOMElements.fromPriceFilter.addEventListener("change", minHandler);
             this._cachedDOMElements.toPriceFilter.addEventListener("change", maxHandler);
             function minHandler() {
+                let maxValues;
+                let selected = filters._cachedDOMElements.toPriceFilter.value;
                 filters._cachedDOMElements.toPriceFilter.options.length = 0;
-                let maxValues = priceObj.values.filter((item, index) => index > this.selectedIndex)
-                if (maxValues.length === 0) {
+                if (this.value === "Min") {
+                    maxValues = priceObj.values;
+                } else {
+                    maxValues = priceObj.values.filter((item, index, arr) => parseInt(item.key) >= parseInt(this.value) || index === arr.length - 1);
+                }
+                for (let value of maxValues) {
+                    if (value.key === "Min") {
+                        continue;
+                    }
                     max = document.createElement('option');
-                    max.value = priceObj.values[priceObj.values.length - 1].key;
-                    max.text = priceObj.values[priceObj.values.length - 1].displayValue;
+                    max.value = value.key;
+                    max.text = value.displayValue;
                     filters._cachedDOMElements.toPriceFilter.append(max);
                 }
-                else {
-                    for (let value of maxValues) {
-                        max = document.createElement('option');
-                        max.value = value.key;
-                        max.text = value.displayValue;
-                        filters._cachedDOMElements.toPriceFilter.append(max);
+                filters._cachedDOMElements.toPriceFilter.value = selected;
+                filters._filters = {
+                    ...filters._filters,
+                    price: {
+                        ...filters._filters.price,
+                        minPrice: priceObj.values.find(item => item.key === this.value)
                     }
-                }
+                };
+                filters._products.filterProducts(filters._filters);
             }
             function maxHandler() {
+                let minValues;
+                let selected = filters._cachedDOMElements.fromPriceFilter.value;
                 filters._cachedDOMElements.fromPriceFilter.options.length = 0;
-                let minValues = priceObj.values.filter((item, index) => index < this.selectedIndex)
-                if (minValues.length === 0) {
+                if (this.value === "Max") {
+                    minValues = priceObj.values;
+                } else {
+                    minValues = priceObj.values.filter((item, index, arr) => parseInt(item.key) <= parseInt(this.value) || index === 0);
+                }
+                for (let value of minValues) {
+                    if (value.key === "Max") {
+                        continue;
+                    }
                     min = document.createElement('option');
-                    min.value = priceObj.values[0].key;
-                    min.text = priceObj.values[0].displayValue;
+                    min.value = value.key;
+                    min.text = value.displayValue;
                     filters._cachedDOMElements.fromPriceFilter.append(min);
                 }
-                else {
-                    for (let value of minValues) {
-                        min = document.createElement('option');
-                        min.value = value.key;
-                        min.text = value.displayValue;
-                        filters._cachedDOMElements.fromPriceFilter.append(min);
+                filters._cachedDOMElements.fromPriceFilter.value = selected;
+                filters._filters = {
+                    ...filters._filters,
+                    price: {
+                        ...filters._filters.price,
+                        maxPrice: priceObj.values.find(item => item.key === this.value)
                     }
-                }
+                };
+                filters._products.filterProducts(filters._filters);
             }
         }
     }
@@ -88,15 +123,22 @@
         selBrands.id = "brandList";
         this._cachedDOMElements.brandFilter.addEventListener("change", brandHandler);
         function brandHandler() {
-            let brandMatch = (brandObj.values || []).filter(item => (item.title === this.value || item.value === this.value))[0];
-            selectedBrands = [...selectedBrands, brandMatch];
-            let html = "";
-            for (let brand of selectedBrands) {
-                html += `${brand.title} , `;
+            let brandMatch = (brandObj.values || []).find(item => (item.title === this.value || item.value === this.value));
+            if (brandMatch) {
+                selectedBrands = [...selectedBrands, brandMatch.value];
+                let html = "";
+                for (let brand of selectedBrands) {
+                    html += `${brand} , `;
+                }
+                selBrands.innerHTML = html;
+                filters._cachedDOMElements.brandContainer.append(selBrands);
+                this.value = "";
+                this.textContent = "";
+                filters._filters = { ...filters._filters, brands: selectedBrands };
+                filters._products.filterProducts(filters._filters);
             }
-            selBrands.innerHTML = html;
-            filters._cachedDOMElements.brandContainer.append(selBrands);
-            console.log(selectedBrands);
+            this.value = "";
+            this.textContent = "";
         }
 
     }
@@ -133,15 +175,16 @@
                 colorInput.checked = !colorInput.checked;
             }
             if (colorInput.checked) {
-                selectedColors = [...selectedColors, colorValue];
+                selectedColors = [...selectedColors, colorValue.title];
             }
             else {
-                let index = selectedColors.indexOf(colorValue);
+                let index = selectedColors.indexOf(colorValue.title);
                 if (index >= 0) {
                     selectedColors.splice(index, 1);
                 }
             }
-            console.log(selectedColors);
+            filters._filters = { ...filters._filters, colors: selectedColors };
+            filters._products.filterProducts(filters._filters);
         }
     }
 
