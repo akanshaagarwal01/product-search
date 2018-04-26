@@ -1,0 +1,41 @@
+#container {
+    display:flex;
+}
+
+.filters {
+    width:20%;
+}
+
+.colorCheckbox {
+    display:block;
+    width:150px;
+}
+
+.dispColor {
+    border-radius : 50%;
+    width:10px;
+    height:10px;
+    display: inline-block;
+}
+
+.products {
+    width:80%;
+    display:flex;
+    flex-wrap: wrap;
+}
+
+.productContainer {
+
+}
+
+.productImgContainer {
+
+}
+
+.productImg {
+
+}
+
+.productDescription {
+
+}
