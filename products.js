@@ -43,7 +43,7 @@
 
     Products.prototype.renderProducts = function (products) {
         this._cachedDOMElements.productGrid.innerHTML = '';
-        this._cachedDOMElements.resultCount.innerHTML = `Showing ${products.length} results for "shoes"`;
+        this._cachedDOMElements.resultCount.innerHTML = `<h3>Showing ${products.length} results for "shoes"</h3>`;
         for (let product of products) {
             let productContainer = document.createElement('div');
             productContainer.className = "productContainer";
@@ -54,9 +54,9 @@
             productImg.src = product.image;
             productImgContainer.append(productImg);
             let title = product.title || '';
-            let rating = product.rating || '';
-            let final_price = product.price.final_price || '';
-            let mrp = product.price.mrp || '';
+            let rating = product.rating === '' ? '' : `${product.rating} <span class="fa fa-star "></span>`;
+            let final_price = "final_price" in product.price ? `<span class="fa fa-rupee "></span> ${product.price.final_price}` : '';
+            let mrp = "mrp" in product.price ? `<span class="fa fa-rupee "></span> ${product.price.mrp}` : '';
             let discount = product.discount > 0 ? product.discount + '% off' : '';
             let productDescription = document.createElement('div');
             let html = `<div class = "productTitle"> ${title} </div>
@@ -87,7 +87,6 @@
 
 
     Products.prototype.filterProducts = function (filters) {
-        console.log(filters);
         this._currProductArr = Object.assign([], products._productArr);
         if (filters.price.minPrice.key !== "Min") {
             this._currProductArr = this._currProductArr.filter(item => parseInt(item.price.final_price) >= parseInt(filters.price.minPrice.key));

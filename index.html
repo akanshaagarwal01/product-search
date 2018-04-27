@@ -2,23 +2,31 @@
 
 <head>
     <title>Product Catalogue</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
     <div id="container">
         <div class="filters">
-            <div id="header">Filters</div>
-            <label> PRICE </label>
+            <h3 id="header">Filters</h3>
+
+            <h5> PRICE </h5>
             <div id="Price">
                 <select id="fromPrice"></select>
+                <text>&nbsp;to&nbsp;</text>
                 <select id="toPrice"></select>
             </div>
-            <label> BRAND </label>
+
+            <h5> BRAND </h5>
             <div id="Brand">
-                <input id="brandName" type="text" placeholder="Search Brand">
+                <div id="searchBrand">
+                    <img src="images/search.png">
+                    <input id="brandName" type="text" placeholder="Search Brand">
+                </div>
             </div>
-            <label> COLOR </label>
+
+            <h5> COLOR </h5>
             <div id="Color">
             </div>
         </div>
@@ -26,9 +34,9 @@
             <div id="resultCount"></div>
             <div id="sortBy">
                 <text> Sort By </text>
-                <button id="sortByRelevance" value="sortByRelevance">Relevance</button>
-                <button id="sortByPriceLtoH" value="sortByPriceLtoH">Price - Low to High</button>
-                <button id="sortByPriceHtoL" value="sortByPriceHtoL">Price - High to Low</button>
+                <button class="sortButtons" id="sortByRelevance" value="sortByRelevance">Relevance</button>
+                <button class="sortButtons" id="sortByPriceLtoH" value="sortByPriceLtoH">Price - Low to High</button>
+                <button class="sortButtons" id="sortByPriceHtoL" value="sortByPriceHtoL">Price - High to Low</button>
             </div>
             <div id="productGrid"></div>
         </div>

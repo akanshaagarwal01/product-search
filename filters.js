@@ -121,6 +121,7 @@
         let brandObj = this._filterArr.find(item => item.type === "BRAND");
         let selBrands = document.createElement('div');
         selBrands.id = "brandList";
+        selBrands.addEventListener("click", removeBrand);
         this._cachedDOMElements.brandFilter.addEventListener("change", brandHandler);
         function brandHandler() {
             let brandMatch = (brandObj.values || []).find(item => (item.title === this.value || item.value === this.value));
@@ -128,7 +129,10 @@
                 selectedBrands = [...selectedBrands, brandMatch.value];
                 let html = "";
                 for (let brand of selectedBrands) {
-                    html += `${brand} , `;
+                    html += `<div class = "brandChip">
+                        <text class = "brandValue">${brand}</text>
+                        <span class= "closeButton"> &times; </span>
+                    </div>`
                 }
                 selBrands.innerHTML = html;
                 filters._cachedDOMElements.brandContainer.append(selBrands);
@@ -139,6 +143,16 @@
             }
             this.value = "";
             this.textContent = "";
+        }
+        function removeBrand(event) {
+            let brandValue = event.target.parentElement.querySelector('.brandValue').textContent;
+            let index = selectedBrands.indexOf(brandValue);
+            if (index >= 0) {
+                selectedBrands.splice(index, 1);
+                event.target.parentElement.remove();
+                filters._filters = { ...filters._filters, brands: selectedBrands };
+                filters._products.filterProducts(filters._filters);
+            }
         }
 
     }
